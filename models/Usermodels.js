@@ -30,14 +30,12 @@ const UserSchema = mongoose.Schema({
   avatar: {
     public_id: {
       type: String,
-      required: [true, "please enter the public_id"],
-      default: "your sympal profile image",
+      required: [true, "please enter the public_id"]
     },
     url: {
       type: String,
-      required: [true, "please enter the url"],
-      default: "userprofile Pic url",
-    },
+      required: [true, "please enter the url"]
+    }
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
@@ -70,4 +68,5 @@ UserSchema.methods.reserpassword = async function (enterpassword) {
 
   return resetToken;
 };
+
 module.exports = mongoose.model("User", UserSchema);

@@ -5,6 +5,8 @@ const User = require("../models/Usermodels");
 const sendtoken = require("../utils/sendtoken");
 const sendMail = require("../utils/SendEmail");
 const crypto = require("crypto");
+const { uuid } = require('uuidv4');
+const cloudnaryonCloud = require("../utils/cloundnary.js")
 
 //Ragistration user
 
@@ -13,8 +15,27 @@ exports.createUser = catchAsyncError(async (req, res, next) => {
   if (!req.body.role) {
     req.body.role = "user";
   }
-  const user = await User.create(req.body);
 
+  const existedUser = await User.findOne({
+    $or: [{ name }, { email }],
+  }).select('+password');
+
+  if (existedUser) {
+    return next(new ErrorHandler("User with email or username already exists", 409));
+  }
+
+  
+  const avatarlocalPath = req?.file?.path;
+  const avatar = await cloudnaryonCloud(avatarlocalPath);
+  const user = await User.create({
+    name,
+    email,
+    password,
+    avatar :{
+      public_id: uuid(),
+      url:avatar?.url
+    },
+  });
   if (!user) {
     return next(new ErrorHandler("User not found", 404));
   }
